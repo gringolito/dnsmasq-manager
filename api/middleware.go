@@ -23,17 +23,22 @@ func NewMiddleware(logger *slog.Logger, cfg *config.Config) (Middleware, error) 
 		return nil, err
 	}
 
-	return middleware{
-		logger: fiberslog.New(fiberslog.Config{
-			Logger: logger,
-			Fields: []string{"latency", "status", "method", "path", "requestId", "ip", "port", "pid"},
-		}),
+	mw := middleware{
 		recovery: recover.New(recover.Config{
 			EnableStackTrace: true,
 		}),
 		requestId: requestid.New(),
 		jwtConfig: jwtConfig,
-	}, nil
+	}
+
+	if logger != nil {
+		mw.logger = fiberslog.New(fiberslog.Config{
+			Logger: logger,
+			Fields: []string{"latency", "status", "method", "path", "requestId", "ip", "port", "pid"},
+		})
+	}
+
+	return mw, nil
 }
 
 type middleware struct {
@@ -65,6 +70,9 @@ func (m middleware) Authentication(roles ...string) fiber.Handler {
 }
 
 func (m middleware) Logger() fiber.Handler {
+	if m.logger == nil {
+		return voidMiddleware
+	}
 	return m.logger
 }
 
