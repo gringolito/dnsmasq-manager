@@ -13,6 +13,9 @@ type errorMessage struct {
 	Details interface{} `json:"details"`
 }
 
+const ServerErrorMessage = "An error occurred on the server."
+const InternalServerError = "An internal server error occurred. Please contact the administrator and provide the following request ID: %s."
+
 func ErrorResponse(c *fiber.Ctx, httpStatus int, message string, details interface{}) error {
 	return c.Status(httpStatus).JSON(errorMessage{
 		Error:   http.StatusText(httpStatus),
@@ -23,10 +26,7 @@ func ErrorResponse(c *fiber.Ctx, httpStatus int, message string, details interfa
 
 func InternalServerErrorResponse(c *fiber.Ctx) error {
 	requestId := c.Locals("requestid").(string)
-
-	return ErrorResponse(c, http.StatusInternalServerError,
-		"An error occurred on the server.",
-		fmt.Sprintf("An internal server error occurred. Please contact the administrator and provide the following request ID: %s.", requestId))
+	return ErrorResponse(c, http.StatusInternalServerError, ServerErrorMessage, fmt.Sprintf(InternalServerError, requestId))
 }
 
 func UnprocessableEntityResponse(c *fiber.Ctx, message string, details interface{}) error {

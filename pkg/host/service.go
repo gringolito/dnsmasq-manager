@@ -16,6 +16,7 @@ type Service interface {
 	RemoveByIP(ipAddress net.IP) (*model.StaticDhcpHost, error)
 	RemoveByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error)
 }
+
 type service struct {
 	repository Repository
 }
