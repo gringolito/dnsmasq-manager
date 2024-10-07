@@ -1,4 +1,4 @@
-package tests
+package handler
 
 import (
 	"errors"
@@ -11,11 +11,11 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gringolito/dnsmasq-manager/api/handler"
 	"github.com/gringolito/dnsmasq-manager/api/presenter"
 	"github.com/gringolito/dnsmasq-manager/pkg/host"
 	hostmock "github.com/gringolito/dnsmasq-manager/pkg/host/mock"
 	"github.com/gringolito/dnsmasq-manager/pkg/model"
+	"github.com/gringolito/dnsmasq-manager/tests"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -83,7 +83,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodGet,
 		route:              "/api/v1/static/hosts",
 		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, UUIDRegexMatch)),
+		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("FetchAll").Once().Return(nil, errors.New("an error"))
 		},
@@ -93,7 +93,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodGet,
 		route:              "/api/v1/static/host",
 		expectedStatusCode: http.StatusBadRequest,
-		expectedResponse:   ErrorJSON(http.StatusBadRequest, handler.InvalidRequestMessage, handler.MissingQueryParameter),
+		expectedResponse:   tests.ErrorJSON(http.StatusBadRequest, InvalidRequestMessage, MissingQueryParameter),
 		mockSetup:          voidMock,
 	},
 	{
@@ -111,7 +111,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodGet,
 		route:              fmt.Sprintf("/api/v1/static/host?mac=%s", InvalidMACAddress),
 		expectedStatusCode: http.StatusBadRequest,
-		expectedResponse:   ErrorJSON(http.StatusBadRequest, handler.InvalidMacAddressMessage, fmt.Sprintf(handler.MalformedMacAddress, InvalidMACAddress)),
+		expectedResponse:   tests.ErrorJSON(http.StatusBadRequest, InvalidMacAddressMessage, fmt.Sprintf(MalformedMacAddress, InvalidMACAddress)),
 		mockSetup:          voidMock,
 	},
 	{
@@ -119,7 +119,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodGet,
 		route:              fmt.Sprintf("/api/v1/static/host?mac=%s", ValidMACAddress),
 		expectedStatusCode: http.StatusNotFound,
-		expectedResponse:   ErrorJSON(http.StatusNotFound, handler.StaticHostNotFoundMessage, fmt.Sprintf(handler.NoMatchingMacAddress, ValidMACAddress)),
+		expectedResponse:   tests.ErrorJSON(http.StatusNotFound, StaticHostNotFoundMessage, fmt.Sprintf(NoMatchingMacAddress, ValidMACAddress)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("FetchByMac", ParseMAC(ValidMACAddress)).Once().Return(nil, nil)
 		},
@@ -129,7 +129,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodGet,
 		route:              fmt.Sprintf("/api/v1/static/host?mac=%s", ValidMACAddress),
 		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, UUIDRegexMatch)),
+		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("FetchByMac", ParseMAC(ValidMACAddress)).Once().Return(nil, errors.New("an error"))
 		},
@@ -149,7 +149,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodGet,
 		route:              fmt.Sprintf("/api/v1/static/host?ip=%s", ValidIPAddress),
 		expectedStatusCode: http.StatusNotFound,
-		expectedResponse:   ErrorJSON(http.StatusNotFound, handler.StaticHostNotFoundMessage, fmt.Sprintf(handler.NoMatchingIPAddress, ValidIPAddress)),
+		expectedResponse:   tests.ErrorJSON(http.StatusNotFound, StaticHostNotFoundMessage, fmt.Sprintf(NoMatchingIPAddress, ValidIPAddress)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("FetchByIP", net.ParseIP(ValidIPAddress)).Once().Return(nil, nil)
 		},
@@ -159,7 +159,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodGet,
 		route:              fmt.Sprintf("/api/v1/static/host?ip=%s", ValidIPAddress),
 		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, UUIDRegexMatch)),
+		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("FetchByIP", net.ParseIP(ValidIPAddress)).Once().Return(nil, errors.New("an error"))
 		},
@@ -181,7 +181,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(InvalidJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ErrorJSON(http.StatusUnprocessableEntity, handler.InvalidRequestBodyMessage, handler.HostCouldNotBeParsed),
+		expectedResponse:   tests.ErrorJSON(http.StatusUnprocessableEntity, InvalidRequestBodyMessage, HostCouldNotBeParsed),
 		mockSetup:          voidMock,
 	},
 	{
@@ -190,7 +190,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(MissingMACAddressJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("MacAddress", "The MacAddress field is required.", ""),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "MacAddress", "The MacAddress field is required.", ""),
 		mockSetup:          voidMock,
 	},
 	{
@@ -199,7 +199,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(MissingIPAddressJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("IPAddress", "The IPAddress field is required.", ""),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "IPAddress", "The IPAddress field is required.", ""),
 		mockSetup:          voidMock,
 	},
 	{
@@ -208,7 +208,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(MissingHostNameJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("HostName", "The HostName field is required.", ""),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "HostName", "The HostName field is required.", ""),
 		mockSetup:          voidMock,
 	},
 	{
@@ -217,7 +217,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(InvalidMACAddressJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("MacAddress", "The MacAddress field must be of type mac.", InvalidMACAddress),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "MacAddress", "The MacAddress field must be of type mac.", InvalidMACAddress),
 		mockSetup:          voidMock,
 	},
 	{
@@ -226,7 +226,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(InvalidIPAddressJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("IPAddress", "The IPAddress field must be of type ipv4.", InvalidIPAddress),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "IPAddress", "The IPAddress field must be of type ipv4.", InvalidIPAddress),
 		mockSetup:          voidMock,
 	},
 	{
@@ -235,7 +235,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(InvalidHostNameJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("HostName", "The HostName field must be of type hostname.", InvalidHostName),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "HostName", "The HostName field must be of type hostname.", InvalidHostName),
 		mockSetup:          voidMock,
 	},
 	{
@@ -244,7 +244,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(ValidHostJSON),
 		expectedStatusCode: http.StatusConflict,
-		expectedResponse:   ErrorJSON(http.StatusConflict, handler.DuplicatedIPAddressMessage, fmt.Sprintf(handler.IPAddressAlreadyInUse, ValidIPAddress)),
+		expectedResponse:   tests.ErrorJSON(http.StatusConflict, DuplicatedIPAddressMessage, fmt.Sprintf(IPAddressAlreadyInUse, ValidIPAddress)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("Insert", &ValidHost).Once().Return(host.DuplicatedEntryError{Field: "IP", Value: ValidIPAddress})
 		},
@@ -255,7 +255,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(ValidHostJSON),
 		expectedStatusCode: http.StatusConflict,
-		expectedResponse:   ErrorJSON(http.StatusConflict, handler.DuplicatedMacAddressMessage, fmt.Sprintf(handler.MacAddressAlreadyInUse, ValidMACAddress)),
+		expectedResponse:   tests.ErrorJSON(http.StatusConflict, DuplicatedMacAddressMessage, fmt.Sprintf(MacAddressAlreadyInUse, ValidMACAddress)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("Insert", &ValidHost).Once().Return(host.DuplicatedEntryError{Field: "MAC", Value: ValidMACAddress})
 		},
@@ -266,7 +266,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(ValidHostJSON),
 		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, UUIDRegexMatch)),
+		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("Insert", &ValidHost).Once().Return(errors.New("an error"))
 		},
@@ -288,7 +288,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(InvalidJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ErrorJSON(http.StatusUnprocessableEntity, handler.InvalidRequestBodyMessage, handler.HostCouldNotBeParsed),
+		expectedResponse:   tests.ErrorJSON(http.StatusUnprocessableEntity, InvalidRequestBodyMessage, HostCouldNotBeParsed),
 		mockSetup:          voidMock,
 	},
 	{
@@ -297,7 +297,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(MissingMACAddressJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("MacAddress", "The MacAddress field is required.", ""),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "MacAddress", "The MacAddress field is required.", ""),
 		mockSetup:          voidMock,
 	},
 	{
@@ -306,7 +306,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(MissingIPAddressJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("IPAddress", "The IPAddress field is required.", ""),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "IPAddress", "The IPAddress field is required.", ""),
 		mockSetup:          voidMock,
 	},
 	{
@@ -315,7 +315,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(MissingHostNameJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("HostName", "The HostName field is required.", ""),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "HostName", "The HostName field is required.", ""),
 		mockSetup:          voidMock,
 	},
 	{
@@ -324,7 +324,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(InvalidMACAddressJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("MacAddress", "The MacAddress field must be of type mac.", InvalidMACAddress),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "MacAddress", "The MacAddress field must be of type mac.", InvalidMACAddress),
 		mockSetup:          voidMock,
 	},
 	{
@@ -333,7 +333,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(InvalidIPAddressJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("IPAddress", "The IPAddress field must be of type ipv4.", InvalidIPAddress),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "IPAddress", "The IPAddress field must be of type ipv4.", InvalidIPAddress),
 		mockSetup:          voidMock,
 	},
 	{
@@ -342,7 +342,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(InvalidHostNameJSON),
 		expectedStatusCode: http.StatusUnprocessableEntity,
-		expectedResponse:   ValidationErrorJSON("HostName", "The HostName field must be of type hostname.", InvalidHostName),
+		expectedResponse:   tests.ValidationErrorJSON(InvalidRequestBodyMessage, "HostName", "The HostName field must be of type hostname.", InvalidHostName),
 		mockSetup:          voidMock,
 	},
 	{
@@ -351,7 +351,7 @@ var testCases = []struct {
 		route:              "/api/v1/static/host",
 		requestBody:        strings.NewReader(ValidHostJSON),
 		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, UUIDRegexMatch)),
+		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("Update", &ValidHost).Once().Return(errors.New("an error"))
 		},
@@ -361,7 +361,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodDelete,
 		route:              "/api/v1/static/host",
 		expectedStatusCode: http.StatusBadRequest,
-		expectedResponse:   ErrorJSON(http.StatusBadRequest, handler.InvalidRequestMessage, handler.MissingQueryParameter),
+		expectedResponse:   tests.ErrorJSON(http.StatusBadRequest, InvalidRequestMessage, MissingQueryParameter),
 		mockSetup:          voidMock,
 	},
 	{
@@ -379,7 +379,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodDelete,
 		route:              fmt.Sprintf("/api/v1/static/host?mac=%s", InvalidMACAddress),
 		expectedStatusCode: http.StatusBadRequest,
-		expectedResponse:   ErrorJSON(http.StatusBadRequest, handler.InvalidMacAddressMessage, fmt.Sprintf(handler.MalformedMacAddress, InvalidMACAddress)),
+		expectedResponse:   tests.ErrorJSON(http.StatusBadRequest, InvalidMacAddressMessage, fmt.Sprintf(MalformedMacAddress, InvalidMACAddress)),
 		mockSetup:          voidMock,
 	},
 	{
@@ -397,7 +397,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodDelete,
 		route:              fmt.Sprintf("/api/v1/static/host?mac=%s", ValidMACAddress),
 		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, UUIDRegexMatch)),
+		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("RemoveByMac", ParseMAC(ValidMACAddress)).Once().Return(nil, errors.New("an error"))
 		},
@@ -427,7 +427,7 @@ var testCases = []struct {
 		httpMethod:         http.MethodDelete,
 		route:              fmt.Sprintf("/api/v1/static/host?ip=%s", ValidIPAddress),
 		expectedStatusCode: http.StatusInternalServerError,
-		expectedResponse:   ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, UUIDRegexMatch)),
+		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("RemoveByIP", net.ParseIP(ValidIPAddress)).Once().Return(nil, errors.New("an error"))
 		},
@@ -435,11 +435,11 @@ var testCases = []struct {
 }
 
 func setupTest(t *testing.T, mockSetup func(mock *hostmock.ServiceMock)) *fiber.App {
-	app := SetupApp()
-	config := SetupConfig(t)
+	app := tests.SetupApp()
+	config := tests.SetupConfig(t)
 	serviceMock := &hostmock.ServiceMock{}
-	router := SetupRouter(app, config)
-	router.HostApi(serviceMock)
+	router := tests.SetupRouter(app, config)
+	RouteStaticHosts(router, serviceMock)
 	mockSetup(serviceMock)
 	return app
 }
@@ -458,8 +458,8 @@ func TestStaticHostsApi(t *testing.T) {
 
 			assert.Equal(t, test.expectedStatusCode, response.StatusCode, "%s: returned wrong HTTP status code", description)
 
-			responseBody := GetBody(response)
-			if !JSONMatches(test.expectedResponse, string(responseBody)) {
+			responseBody := tests.GetBody(response)
+			if !tests.JSONMatches(test.expectedResponse, string(responseBody)) {
 				assert.JSONEq(t, test.expectedResponse, string(responseBody), "%s: unexpected HTTP response body", description)
 			}
 		})

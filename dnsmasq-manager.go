@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gringolito/dnsmasq-manager/api"
+	"github.com/gringolito/dnsmasq-manager/api/handler"
 	"github.com/gringolito/dnsmasq-manager/config"
 	"github.com/gringolito/dnsmasq-manager/pkg/host"
 	"golang.org/x/exp/slog"
@@ -71,10 +72,10 @@ func setupLogger(cfg *config.Config) *slog.Logger {
 	return logger
 }
 
-func addHostApi(router api.Router, cfg *config.Config) {
+func addStaticHostApi(router api.Router, cfg *config.Config) {
 	hostRepository := host.NewRepository(cfg.Host.Static.File)
 	hostService := host.NewService(hostRepository)
-	router.HostApi(hostService)
+	handler.RouteStaticHosts(router, hostService)
 }
 
 func main() {
@@ -100,11 +101,11 @@ func main() {
 	}
 
 	router := api.NewRouter(app, middleware)
-	router.SwaggerUI(OpenApiSpecFile)
-	router.Metrics(monitor.Config{
+	router.AddSwaggerUIRoute(OpenApiSpecFile)
+	router.AddMetricsRoute(monitor.Config{
 		Title: fmt.Sprintf("%s Monitor", AppName),
 	})
-	addHostApi(router, cfg)
+	addStaticHostApi(router, cfg)
 
 	if err := app.Listen(fmt.Sprintf(":%d", cfg.Server.Port)); err != nil {
 		logger.Error(err.Error(), slog.Int("listeningPort", cfg.Server.Port))
