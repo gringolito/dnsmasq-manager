@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-
-	"github.com/gringolito/dnsmasq-manager/api/handler"
 )
 
 const UUIDRegexMatch = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
@@ -89,8 +87,8 @@ func ErrorJSON(statusCode int, message string, details string) string {
 	return errorJSON(statusCode, message, fmt.Sprintf(`"%s"`, details))
 }
 
-func ValidationErrorJSON(field string, reason string, value string) string {
-	return errorJSON(http.StatusUnprocessableEntity, handler.InvalidRequestBodyMessage, fmt.Sprintf(`[{
+func ValidationErrorJSON(message string, field string, reason string, value string) string {
+	return errorJSON(http.StatusUnprocessableEntity, message, fmt.Sprintf(`[{
 		"field": "%s",
 		"reason": "%s",
 		"value": "%s"

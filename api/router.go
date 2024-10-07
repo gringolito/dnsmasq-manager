@@ -3,13 +3,17 @@ package api
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
-	"github.com/gringolito/dnsmasq-manager/api/handler"
 	"github.com/gringolito/dnsmasq-manager/api/middleware/fiberswagger"
-	"github.com/gringolito/dnsmasq-manager/api/scope"
-	"github.com/gringolito/dnsmasq-manager/pkg/host"
 )
 
-type Router struct {
+type Router interface {
+	AddMetricsRoute(cfg monitor.Config)
+	AddSwaggerUIRoute(openApiSpecFile string)
+	AddApiV1Route(prefix string, routes func(fiber.Router), name ...string)
+	AuthenticationHandler(roles ...string) fiber.Handler
+}
+
+type router struct {
 	root  fiber.Router
 	api   fiber.Router
 	apiv1 fiber.Router
@@ -25,7 +29,7 @@ func NewRouter(root fiber.Router, mw Middleware) Router {
 
 	apiv1 := api.Group("/v1")
 
-	return Router{
+	return &router{
 		root:  root,
 		api:   api,
 		apiv1: apiv1,
@@ -33,23 +37,21 @@ func NewRouter(root fiber.Router, mw Middleware) Router {
 	}
 }
 
-func (r Router) HostApi(service host.Service) {
-	r.apiv1.Route("/static", func(router fiber.Router) {
-		router.Get("/hosts", r.mw.Authentication(scope.DhcpCanRead...), handler.GetAllStaticHosts(service)).Name("get_all")
-		router.Get("/host", r.mw.Authentication(scope.DhcpCanRead...), handler.GetStaticHost(service)).Name("get")
-		router.Post("/host", r.mw.Authentication(scope.DhcpCanAdd...), handler.AddStaticHost(service)).Name("add")
-		router.Put("/host", r.mw.Authentication(scope.DhcpCanChange...), handler.UpdateStaticHost(service)).Name("update")
-		router.Delete("/host", r.mw.Authentication(scope.DhcpCanChange...), handler.RemoveStaticHost(service)).Name("remove")
-	}, "static.hosts.")
-}
-
-func (r Router) Metrics(cfg monitor.Config) {
+func (r *router) AddMetricsRoute(cfg monitor.Config) {
 	r.root.Get("/metrics", monitor.New(cfg))
 }
 
-func (r Router) SwaggerUI(openApiSpecFile string) {
+func (r *router) AddSwaggerUIRoute(openApiSpecFile string) {
 	fiberswagger.Router(r.root, fiberswagger.Config{
 		BasePath: "/openapi",
 		FilePath: openApiSpecFile,
 	})
+}
+
+func (r *router) AddApiV1Route(prefix string, routes func(fiber.Router), name ...string) {
+	r.apiv1.Route(prefix, routes, name...)
+}
+
+func (r *router) AuthenticationHandler(roles ...string) fiber.Handler {
+	return r.mw.Authentication(roles...)
 }

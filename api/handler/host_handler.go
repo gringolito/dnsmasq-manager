@@ -6,8 +6,10 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gringolito/dnsmasq-manager/api"
 	"github.com/gringolito/dnsmasq-manager/api/dto"
 	"github.com/gringolito/dnsmasq-manager/api/presenter"
+	"github.com/gringolito/dnsmasq-manager/api/scope"
 	"github.com/gringolito/dnsmasq-manager/api/validation"
 	"github.com/gringolito/dnsmasq-manager/pkg/host"
 	"github.com/gringolito/dnsmasq-manager/pkg/model"
@@ -220,4 +222,14 @@ func removeStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) 
 	}
 
 	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
+}
+
+func RouteStaticHosts(router api.Router, service host.Service) {
+	router.AddApiV1Route("/static", func(r fiber.Router) {
+		r.Get("/hosts", router.AuthenticationHandler(scope.DhcpCanRead...), GetAllStaticHosts(service)).Name("get_all")
+		r.Get("/host", router.AuthenticationHandler(scope.DhcpCanRead...), GetStaticHost(service)).Name("get")
+		r.Post("/host", router.AuthenticationHandler(scope.DhcpCanAdd...), AddStaticHost(service)).Name("add")
+		r.Put("/host", router.AuthenticationHandler(scope.DhcpCanChange...), UpdateStaticHost(service)).Name("update")
+		r.Delete("/host", router.AuthenticationHandler(scope.DhcpCanChange...), RemoveStaticHost(service)).Name("remove")
+	}, "static.hosts.")
 }
