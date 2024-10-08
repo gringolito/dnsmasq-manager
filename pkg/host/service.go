@@ -86,6 +86,8 @@ type DuplicatedEntryError struct {
 	Value string
 }
 
+const duplicatedEntryErrorMessage = "Duplicated %s address: %s"
+
 func (e DuplicatedEntryError) Error() string {
-	return fmt.Sprintf("Duplicated %s address: %s", e.Field, e.Value)
+	return fmt.Sprintf(duplicatedEntryErrorMessage, e.Field, e.Value)
 }
