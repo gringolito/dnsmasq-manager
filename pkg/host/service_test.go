@@ -8,20 +8,16 @@ import (
 
 	hostmock "github.com/gringolito/dnsmasq-manager/pkg/host/mock"
 	"github.com/gringolito/dnsmasq-manager/pkg/model"
+	"github.com/gringolito/dnsmasq-manager/tests"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
-	ValidMACAddress = "aa:bb:cc:dd:ee:ff"
+	ValidMACAddress = "02:04:06:aa:bb:cc"
 	ValidIPAddress  = "1.1.1.1"
 )
 
-var ValidHost = model.StaticDhcpHost{MacAddress: ParseMAC(ValidMACAddress), IPAddress: net.ParseIP(ValidIPAddress), HostName: "Foo"}
-
-func ParseMAC(macAddress string) net.HardwareAddr {
-	mac, _ := net.ParseMAC(macAddress)
-	return mac
-}
+var ValidHost = model.StaticDhcpHost{MacAddress: tests.ParseMAC(ValidMACAddress), IPAddress: net.ParseIP(ValidIPAddress), HostName: "Foo"}
 
 func TestHostServiceInsertUpdate(t *testing.T) {
 	Insert := func(service Service) error { return service.Insert(&ValidHost) }
@@ -211,8 +207,8 @@ func TestHostServiceInsertUpdate(t *testing.T) {
 
 func TestHostServiceFetchAll(t *testing.T) {
 	allHosts := []model.StaticDhcpHost{
-		{MacAddress: ParseMAC("02:04:06:aa:bb:cc"), IPAddress: net.ParseIP("1.1.1.1"), HostName: "Foo"},
-		{MacAddress: ParseMAC("02:04:06:dd:ee:ff"), IPAddress: net.ParseIP("2.2.2.2"), HostName: "Bar"},
+		{MacAddress: tests.ParseMAC("02:04:06:aa:bb:cc"), IPAddress: net.ParseIP("1.1.1.1"), HostName: "Foo"},
+		{MacAddress: tests.ParseMAC("02:04:06:dd:ee:ff"), IPAddress: net.ParseIP("2.2.2.2"), HostName: "Bar"},
 	}
 
 	var testCases = []struct {

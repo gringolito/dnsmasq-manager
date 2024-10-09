@@ -4,11 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"regexp"
 )
 
 const UUIDRegexMatch = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+
+func ParseMAC(macAddress string) net.HardwareAddr {
+	mac, _ := net.ParseMAC(macAddress)
+	return mac
+}
 
 func UnmarshalJSON(data []byte) (map[string]any, error) {
 	var JSON map[string]any
