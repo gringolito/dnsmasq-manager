@@ -36,12 +36,7 @@ const (
 	InvalidHostNameJSON   = `{"HostName":"B@r", "IPAddress":"1.1.1.1", "MacAddress":"aa:bb:cc:dd:ee:ff"}`
 )
 
-var ValidHost = model.StaticDhcpHost{MacAddress: ParseMAC(ValidMACAddress), IPAddress: net.ParseIP(ValidIPAddress), HostName: "Foo"}
-
-func ParseMAC(macAddress string) net.HardwareAddr {
-	mac, _ := net.ParseMAC(macAddress)
-	return mac
-}
+var ValidHost = model.StaticDhcpHost{MacAddress: tests.ParseMAC(ValidMACAddress), IPAddress: net.ParseIP(ValidIPAddress), HostName: "Foo"}
 
 var voidMock = func(mock *hostmock.ServiceMock) {}
 
@@ -73,8 +68,8 @@ var testCases = []struct {
 		]`,
 		mockSetup: func(mock *hostmock.ServiceMock) {
 			mock.On("FetchAll").Once().Return(&[]model.StaticDhcpHost{
-				{MacAddress: ParseMAC("02:04:06:aa:bb:cc"), IPAddress: net.ParseIP("1.1.1.1"), HostName: "Foo"},
-				{MacAddress: ParseMAC("02:04:06:dd:ee:ff"), IPAddress: net.ParseIP("2.2.2.2"), HostName: "Bar"},
+				{MacAddress: tests.ParseMAC("02:04:06:aa:bb:cc"), IPAddress: net.ParseIP("1.1.1.1"), HostName: "Foo"},
+				{MacAddress: tests.ParseMAC("02:04:06:dd:ee:ff"), IPAddress: net.ParseIP("2.2.2.2"), HostName: "Bar"},
 			}, nil)
 		},
 	},
@@ -103,7 +98,7 @@ var testCases = []struct {
 		expectedStatusCode: http.StatusOK,
 		expectedResponse:   ValidHostJSON,
 		mockSetup: func(mock *hostmock.ServiceMock) {
-			mock.On("FetchByMac", ParseMAC(ValidMACAddress)).Once().Return(&ValidHost, nil)
+			mock.On("FetchByMac", tests.ParseMAC(ValidMACAddress)).Once().Return(&ValidHost, nil)
 		},
 	},
 	{
@@ -121,7 +116,7 @@ var testCases = []struct {
 		expectedStatusCode: http.StatusNotFound,
 		expectedResponse:   tests.ErrorJSON(http.StatusNotFound, StaticHostNotFoundMessage, fmt.Sprintf(NoMatchingMacAddress, ValidMACAddress)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
-			mock.On("FetchByMac", ParseMAC(ValidMACAddress)).Once().Return(nil, nil)
+			mock.On("FetchByMac", tests.ParseMAC(ValidMACAddress)).Once().Return(nil, nil)
 		},
 	},
 	{
@@ -131,7 +126,7 @@ var testCases = []struct {
 		expectedStatusCode: http.StatusInternalServerError,
 		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
-			mock.On("FetchByMac", ParseMAC(ValidMACAddress)).Once().Return(nil, errors.New("an error"))
+			mock.On("FetchByMac", tests.ParseMAC(ValidMACAddress)).Once().Return(nil, errors.New("an error"))
 		},
 	},
 	{
@@ -371,7 +366,7 @@ var testCases = []struct {
 		expectedStatusCode: http.StatusOK,
 		expectedResponse:   ValidHostJSON,
 		mockSetup: func(mock *hostmock.ServiceMock) {
-			mock.On("RemoveByMac", ParseMAC(ValidMACAddress)).Once().Return(&ValidHost, nil)
+			mock.On("RemoveByMac", tests.ParseMAC(ValidMACAddress)).Once().Return(&ValidHost, nil)
 		},
 	},
 	{
@@ -389,7 +384,7 @@ var testCases = []struct {
 		expectedStatusCode: http.StatusNoContent,
 		expectedResponse:   "",
 		mockSetup: func(mock *hostmock.ServiceMock) {
-			mock.On("RemoveByMac", ParseMAC(ValidMACAddress)).Once().Return(nil, nil)
+			mock.On("RemoveByMac", tests.ParseMAC(ValidMACAddress)).Once().Return(nil, nil)
 		},
 	},
 	{
@@ -399,7 +394,7 @@ var testCases = []struct {
 		expectedStatusCode: http.StatusInternalServerError,
 		expectedResponse:   tests.ErrorJSON(http.StatusInternalServerError, presenter.ServerErrorMessage, fmt.Sprintf(presenter.InternalServerError, tests.UUIDRegexMatch)),
 		mockSetup: func(mock *hostmock.ServiceMock) {
-			mock.On("RemoveByMac", ParseMAC(ValidMACAddress)).Once().Return(nil, errors.New("an error"))
+			mock.On("RemoveByMac", tests.ParseMAC(ValidMACAddress)).Once().Return(nil, errors.New("an error"))
 		},
 	},
 	{
