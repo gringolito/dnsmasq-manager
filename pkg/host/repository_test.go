@@ -102,8 +102,8 @@ func TestHostRepositoryFindAll(t *testing.T) {
 				os.Remove(tc.fileName)
 			},
 			assert: func(t *testing.T, hosts *[]model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "FindAll() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrNotExist, "FindAll() returned an unexpected error type")
+				assert.Error(t, err, "FindAll() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrNotExist, "FindAll() returned an unexpected error")
 			},
 		},
 		{
@@ -111,9 +111,9 @@ func TestHostRepositoryFindAll(t *testing.T) {
 			setupFileContent: InvalidHostsFileContent,
 			setup:            voidSetup,
 			assert: func(t *testing.T, hosts *[]model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "FindAll() did NOT returned an expected error")
+				assert.Error(t, err, "FindAll() did NOT returned an error")
 				// Just to ensure that we are not getting false negatives
-				assert.NotErrorIs(t, err, os.ErrNotExist, "FindAll() returned an unexpected error type")
+				assert.NotErrorIs(t, err, os.ErrNotExist, "FindAll() returned an unexpected error")
 				// Verify that the file content hasn't changed
 				assertFileContent(t, tc.setupFileContent, tc.fileName)
 			},
@@ -180,8 +180,8 @@ func TestHostRepositoryFind(t *testing.T) {
 				os.Remove(tc.fileName)
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "Find() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrNotExist, "Find() returned an unexpected error type")
+				assert.Error(t, err, "Find() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrNotExist, "Find() returned an unexpected error")
 			},
 		},
 		{
@@ -190,9 +190,9 @@ func TestHostRepositoryFind(t *testing.T) {
 			argument:         &ValidHost,
 			setup:            voidSetup,
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "Find() did NOT returned an expected error")
+				assert.Error(t, err, "Find() did NOT returned an error")
 				// Just to ensure that we are not getting false negatives
-				assert.NotErrorIs(t, err, os.ErrNotExist, "Find() returned an unexpected error type")
+				assert.NotErrorIs(t, err, os.ErrNotExist, "Find() returned an unexpected error")
 				// Verify that the file content hasn't changed
 				assertFileContent(t, tc.setupFileContent, tc.fileName)
 			},
@@ -259,8 +259,8 @@ func TestHostRepositoryFindByIP(t *testing.T) {
 				os.Remove(tc.fileName)
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "FindByIP() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrNotExist, "FindByIP() returned an unexpected error type")
+				assert.Error(t, err, "FindByIP() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrNotExist, "FindByIP() returned an unexpected error")
 			},
 		},
 		{
@@ -269,9 +269,9 @@ func TestHostRepositoryFindByIP(t *testing.T) {
 			argument:         ValidHost.IPAddress,
 			setup:            voidSetup,
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "FindByIP() did NOT returned an expected error")
+				assert.Error(t, err, "FindByIP() did NOT returned an error")
 				// Just to ensure that we are not getting false negatives
-				assert.NotErrorIs(t, err, os.ErrNotExist, "FindByIP() returned an unexpected error type")
+				assert.NotErrorIs(t, err, os.ErrNotExist, "FindByIP() returned an unexpected error")
 				// Verify that the file content hasn't changed
 				assertFileContent(t, tc.setupFileContent, tc.fileName)
 			},
@@ -338,8 +338,8 @@ func TestHostRepositoryFindByMac(t *testing.T) {
 				os.Remove(tc.fileName)
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "FindByMac() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrNotExist, "FindByMac() returned an unexpected error type")
+				assert.Error(t, err, "FindByMac() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrNotExist, "FindByMac() returned an unexpected error")
 			},
 		},
 		{
@@ -348,9 +348,9 @@ func TestHostRepositoryFindByMac(t *testing.T) {
 			argument:         tests.ParseMAC(ValidMACAddress),
 			setup:            voidSetup,
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "FindByMac() did NOT returned an expected error")
+				assert.Error(t, err, "FindByMac() did NOT returned an error")
 				// Just to ensure that we are not getting false negatives
-				assert.NotErrorIs(t, err, os.ErrNotExist, "FindByMac() returned an unexpected error type")
+				assert.NotErrorIs(t, err, os.ErrNotExist, "FindByMac() returned an unexpected error")
 				// Verify that the file content hasn't changed
 				assertFileContent(t, tc.setupFileContent, tc.fileName)
 			},
@@ -430,8 +430,8 @@ func TestHostRepositoryDelete(t *testing.T) {
 				os.Remove(tc.fileName)
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "Delete() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrNotExist, "Delete() returned an unexpected error type")
+				assert.Error(t, err, "Delete() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrNotExist, "Delete() returned an unexpected error")
 			},
 		},
 		{
@@ -444,8 +444,8 @@ func TestHostRepositoryDelete(t *testing.T) {
 				f.Chmod(os.FileMode(0444))
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "Delete() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrPermission, "Delete() returned an unexpected error type")
+				assert.Error(t, err, "Delete() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrPermission, "Delete() returned an unexpected error")
 			},
 		},
 		{
@@ -454,9 +454,9 @@ func TestHostRepositoryDelete(t *testing.T) {
 			argument:         &ValidHost,
 			setup:            voidSetup,
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "Delete() did NOT returned an expected error")
+				assert.Error(t, err, "Delete() did NOT returned an error")
 				// Just to ensure that we are not getting false negatives
-				assert.NotErrorIs(t, err, os.ErrNotExist, "Delete() returned an unexpected error type")
+				assert.NotErrorIs(t, err, os.ErrNotExist, "Delete() returned an unexpected error")
 				// Verify that the file content hasn't changed
 				assertFileContent(t, tc.setupFileContent, tc.fileName)
 			},
@@ -536,8 +536,8 @@ func TestHostRepositoryDeleteByIP(t *testing.T) {
 				os.Remove(tc.fileName)
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "DeleteByIP() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrNotExist, "DeleteByIP() returned an unexpected error type")
+				assert.Error(t, err, "DeleteByIP() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrNotExist, "DeleteByIP() returned an unexpected error")
 			},
 		},
 		{
@@ -550,8 +550,8 @@ func TestHostRepositoryDeleteByIP(t *testing.T) {
 				f.Chmod(os.FileMode(0444))
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "DeleteByIP() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrPermission, "DeleteByIP() returned an unexpected error type")
+				assert.Error(t, err, "DeleteByIP() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrPermission, "DeleteByIP() returned an unexpected error")
 			},
 		},
 		{
@@ -560,9 +560,9 @@ func TestHostRepositoryDeleteByIP(t *testing.T) {
 			argument:         net.ParseIP(ValidIPAddress),
 			setup:            voidSetup,
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "DeleteByIP() did NOT returned an expected error")
+				assert.Error(t, err, "DeleteByIP() did NOT returned an error")
 				// Just to ensure that we are not getting false negatives
-				assert.NotErrorIs(t, err, os.ErrNotExist, "DeleteByIP() returned an unexpected error type")
+				assert.NotErrorIs(t, err, os.ErrNotExist, "DeleteByIP() returned an unexpected error")
 				// Verify that the file content hasn't changed
 				assertFileContent(t, tc.setupFileContent, tc.fileName)
 			},
@@ -642,8 +642,8 @@ func TestHostRepositoryDeleteByMac(t *testing.T) {
 				os.Remove(tc.fileName)
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "DeleteByMac() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrNotExist, "DeleteByMac() returned an unexpected error type")
+				assert.Error(t, err, "DeleteByMac() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrNotExist, "DeleteByMac() returned an unexpected error")
 			},
 		},
 		{
@@ -656,8 +656,8 @@ func TestHostRepositoryDeleteByMac(t *testing.T) {
 				f.Chmod(os.FileMode(0444))
 			},
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "DeleteByMac() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrPermission, "DeleteByMac() returned an unexpected error type")
+				assert.Error(t, err, "DeleteByMac() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrPermission, "DeleteByMac() returned an unexpected error")
 			},
 		},
 		{
@@ -666,9 +666,9 @@ func TestHostRepositoryDeleteByMac(t *testing.T) {
 			argument:         tests.ParseMAC(ValidMACAddress),
 			setup:            voidSetup,
 			assert: func(t *testing.T, host *model.StaticDhcpHost, err error, tc *testcase) {
-				assert.Error(t, err, "DeleteByMac() did NOT returned an expected error")
+				assert.Error(t, err, "DeleteByMac() did NOT returned an error")
 				// Just to ensure that we are not getting false negatives
-				assert.NotErrorIs(t, err, os.ErrNotExist, "DeleteByMac() returned an unexpected error type")
+				assert.NotErrorIs(t, err, os.ErrNotExist, "DeleteByMac() returned an unexpected error")
 				// Verify that the file content hasn't changed
 				assertFileContent(t, tc.setupFileContent, tc.fileName)
 			},
@@ -730,8 +730,8 @@ func TestHostRepositorySave(t *testing.T) {
 				os.Remove(tc.fileName)
 			},
 			assert: func(t *testing.T, err error, tc *testcase) {
-				assert.Error(t, err, "Save() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrNotExist, "Save() returned an unexpected error type")
+				assert.Error(t, err, "Save() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrNotExist, "Save() returned an unexpected error")
 			},
 		},
 		{
@@ -744,8 +744,8 @@ func TestHostRepositorySave(t *testing.T) {
 				f.Chmod(os.FileMode(0444))
 			},
 			assert: func(t *testing.T, err error, tc *testcase) {
-				assert.Error(t, err, "Save() did NOT returned an expected error")
-				assert.ErrorIs(t, err, os.ErrPermission, "Save() returned an unexpected error type")
+				assert.Error(t, err, "Save() did NOT returned an error")
+				assert.ErrorIs(t, err, os.ErrPermission, "Save() returned an unexpected error")
 			},
 		},
 		{
@@ -754,9 +754,21 @@ func TestHostRepositorySave(t *testing.T) {
 			host:             &ValidHost,
 			setup:            voidSetup,
 			assert: func(t *testing.T, err error, tc *testcase) {
-				assert.Error(t, err, "Save() did NOT returned an expected error")
+				assert.Error(t, err, "Save() did NOT returned an error")
 				// Just to ensure that we are not getting false negatives
-				assert.NotErrorIs(t, err, os.ErrNotExist, "Save() returned an unexpected error type")
+				assert.NotErrorIs(t, err, os.ErrNotExist, "Save() returned an unexpected error")
+				// Verify that the file content hasn't changed
+				assertFileContent(t, tc.setupFileContent, tc.fileName)
+			},
+		},
+		{
+			name:             "InvalidHost",
+			setupFileContent: ValidHostFileContent,
+			host:             &model.StaticDhcpHost{},
+			setup:            voidSetup,
+			assert: func(t *testing.T, err error, tc *testcase) {
+				assert.Error(t, err, "Save() did NOT returned an error")
+				assert.ErrorIs(t, err, model.ErrDHCPHostMissingMACAddress, "Save() returned an unexpected error")
 				// Verify that the file content hasn't changed
 				assertFileContent(t, tc.setupFileContent, tc.fileName)
 			},

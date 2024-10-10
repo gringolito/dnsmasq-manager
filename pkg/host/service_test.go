@@ -458,7 +458,7 @@ func TestHostServiceErrors(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			err := &DuplicatedEntryError{Field: test.field, Value: test.value}
 			expectedMessage := fmt.Sprintf(duplicatedEntryErrorMessage, test.field, test.value)
-			assert.ErrorContains(t, err, expectedMessage)
+			assert.EqualError(t, err, expectedMessage)
 		})
 	}
 }
