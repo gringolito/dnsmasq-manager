@@ -115,7 +115,11 @@ func (r *repository) parse(file *os.File) (*[]model.StaticDhcpHost, error) {
 func (r *repository) save(hosts *[]model.StaticDhcpHost) error {
 	config := make([]string, 0, len(*hosts))
 	for _, host := range *hosts {
-		config = append(config, host.ToConfig())
+		hostConfig, err := host.ToConfig()
+		if err != nil {
+			return err
+		}
+		config = append(config, hostConfig)
 	}
 
 	err := os.WriteFile(r.staticHostsFilePath, []byte(strings.Join(config, "\n")), os.FileMode(0644))
