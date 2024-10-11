@@ -23,7 +23,7 @@ server, like:
 - [x] Create .deb deployable package (target at least to armv6)
     - [x] .rpm, .apk, ArchLinux packages and tarball archives for all the main architectures (BONUS)
 - [x] Create a OpenAI/Swagger documentation
-- [ ] Add unit tests
+- [x] Add unit tests
 
 ### Phase-2
 

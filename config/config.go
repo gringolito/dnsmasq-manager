@@ -61,26 +61,29 @@ type Config struct {
 	}
 }
 
-func newDefaultConfig() *Config {
-	def := Config{}
-	def.Auth.Method = NoAuth
-	def.Host.Static.File = DefaultDhcpStaticHostFile
-	def.Server.Port = DefaultServerHttpPort
-	def.Log.Level = LogLevelInfo
-	def.Log.Format = LogFormatJSON
-
-	return &def
+func setDefaults(v *viper.Viper) {
+	v.SetDefault("Auth.Method", NoAuth)
+	v.SetDefault("Auth.Key", "")
+	v.SetDefault("Host.Static.File", DefaultDhcpStaticHostFile)
+	v.SetDefault("Server.Port", DefaultServerHttpPort)
+	v.SetDefault("Log.Level", LogLevelInfo)
+	v.SetDefault("Log.File", "")
+	v.SetDefault("Log.Format", LogFormatJSON)
+	v.SetDefault("Log.Source", false)
 }
 
 func Init(configName string) (*Config, error) {
-	viper.AddConfigPath("/etc/dnsmasq-manager/")
-	viper.AddConfigPath(".")
-	viper.SetConfigType("yaml")
-	viper.SetConfigName(configName)
-	viper.SetEnvPrefix("DMM") // DMM stands for (d)ns(m)asq (M)anager
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.AutomaticEnv()
-	err := viper.ReadInConfig()
+	v := viper.New()
+	setDefaults(v)
+
+	v.AddConfigPath("/etc/dnsmasq-manager/")
+	v.AddConfigPath(".")
+	v.SetConfigType("yaml")
+	v.SetConfigName(configName)
+	v.SetEnvPrefix("DMM") // DMM stands for (d)ns(m)asq (M)anager
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.AutomaticEnv()
+	err := v.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error, parse environments and load defaults
@@ -89,11 +92,11 @@ func Init(configName string) (*Config, error) {
 		}
 	}
 
-	config := newDefaultConfig()
-	err = viper.Unmarshal(config)
+	config := Config{}
+	err = v.Unmarshal(&config)
 	if err != nil {
 		return nil, err
 	}
 
-	return config, err
+	return &config, err
 }
