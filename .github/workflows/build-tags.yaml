@@ -1,0 +1,18 @@
+---
+name: Build for tags
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    uses: ./.github/workflows/goreleaser.yaml
+    with:
+      goreleaser-args: release --clean
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
