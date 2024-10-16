@@ -1,0 +1,41 @@
+---
+name: Tests
+
+on:
+  push:
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - master
+      - 'release/v[0-9].[0-9]'
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ./go.mod
+          check-latest: true
+
+      - name: Run unit-tests
+        run: go test -covermode count --coverprofile coverage.out -coverpkg=./... ./... -v
+
+      - name: Check coverage
+        run: go tool cover -func coverage.out
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          name: dnsmasq-manager
+          file: ./coverage.out
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          verbose: true
