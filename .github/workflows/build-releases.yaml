@@ -1,5 +1,5 @@
 ---
-name: Build for tags
+name: Build Release
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  build:
     uses: ./.github/workflows/goreleaser.yaml
     with:
       goreleaser-args: release --clean
