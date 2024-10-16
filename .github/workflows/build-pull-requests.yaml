@@ -1,0 +1,17 @@
+---
+name: Build for PRs
+
+on:
+  pull_request:
+    branches:
+      - master
+      - 'release/v[0-9].[0-9]'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/goreleaser.yaml
+    with:
+      goreleaser-args: --snapshot --clean
