@@ -68,5 +68,5 @@ func (h *StaticDhcpHost) ToConfig() (string, error) {
 }
 
 func (h *StaticDhcpHost) Equal(other StaticDhcpHost) bool {
-	return bytes.Equal(h.MacAddress, other.MacAddress) && bytes.Equal(h.IPAddress, other.IPAddress) && h.HostName == other.HostName
+	return bytes.Equal(h.MacAddress, other.MacAddress) && h.IPAddress.Equal(other.IPAddress) && h.HostName == other.HostName
 }

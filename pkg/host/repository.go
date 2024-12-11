@@ -206,6 +206,6 @@ func sameMacAddress(macAddress net.HardwareAddr) Filter {
 
 func sameIPAddress(ipAddress net.IP) Filter {
 	return func(other model.StaticDhcpHost) bool {
-		return bytes.Equal(ipAddress, other.IPAddress)
+		return ipAddress.Equal(other.IPAddress)
 	}
 }
