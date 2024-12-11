@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/gringolito/dnsmasq-manager/pkg/model"
 	"golang.org/x/exp/slog"
@@ -24,6 +25,7 @@ type Repository interface {
 
 type repository struct {
 	staticHostsFilePath string
+	mutex               sync.RWMutex
 }
 
 func NewRepository(staticHostsFilePath string) Repository {
@@ -33,22 +35,32 @@ func NewRepository(staticHostsFilePath string) Repository {
 }
 
 func (r *repository) FindAll() (*[]model.StaticDhcpHost, error) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 	return r.load()
 }
 
 func (r *repository) Find(host *model.StaticDhcpHost) (*model.StaticDhcpHost, error) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 	return r.find(sameHost(host))
 }
 
 func (r *repository) FindByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 	return r.find(sameMacAddress(macAddress))
 }
 
 func (r *repository) FindByIP(ipAddress net.IP) (*model.StaticDhcpHost, error) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 	return r.find(sameIPAddress(ipAddress))
 }
 
 func (r *repository) Save(host *model.StaticDhcpHost) error {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 	hosts, err := r.load()
 	if err != nil {
 		return err
@@ -59,14 +71,20 @@ func (r *repository) Save(host *model.StaticDhcpHost) error {
 }
 
 func (r *repository) Delete(host *model.StaticDhcpHost) (*model.StaticDhcpHost, error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 	return r.delete(sameHost(host))
 }
 
 func (r *repository) DeleteByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 	return r.delete(sameMacAddress(macAddress))
 }
 
 func (r *repository) DeleteByIP(ipAddress net.IP) (*model.StaticDhcpHost, error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 	return r.delete(sameIPAddress(ipAddress))
 }
 
@@ -117,6 +135,10 @@ func (r *repository) save(hosts *[]model.StaticDhcpHost) error {
 	for _, host := range *hosts {
 		hostConfig, err := host.ToConfig()
 		if err != nil {
+			slog.Debug("Invalid static DHCP host",
+				slog.Any("host", host),
+				slog.String("error", err.Error()),
+			)
 			return err
 		}
 		config = append(config, hostConfig)

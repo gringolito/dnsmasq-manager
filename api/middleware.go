@@ -5,6 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/gofiber/fiber/v2/utils"
+	"github.com/google/uuid"
 	"github.com/gringolito/dnsmasq-manager/api/middleware/fiberslog"
 	"github.com/gringolito/dnsmasq-manager/config"
 	"golang.org/x/exp/slog"
@@ -27,7 +29,10 @@ func NewMiddleware(logger *slog.Logger, cfg *config.Config) (Middleware, error) 
 		recovery: recover.New(recover.Config{
 			EnableStackTrace: true,
 		}),
-		requestId: requestid.New(),
+		requestId: requestid.New(requestid.Config{
+			Generator:  uuidV7,
+			ContextKey: "requestid",
+		}),
 		jwtConfig: jwtConfig,
 	}
 
@@ -39,6 +44,15 @@ func NewMiddleware(logger *slog.Logger, cfg *config.Config) (Middleware, error) 
 	}
 
 	return mw, nil
+}
+
+func uuidV7() string {
+	id, err := uuid.NewV7()
+	if err != nil {
+		return utils.UUID()
+	}
+
+	return id.String()
 }
 
 type middleware struct {
