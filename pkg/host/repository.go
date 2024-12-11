@@ -135,6 +135,10 @@ func (r *repository) save(hosts *[]model.StaticDhcpHost) error {
 	for _, host := range *hosts {
 		hostConfig, err := host.ToConfig()
 		if err != nil {
+			slog.Debug("Invalid static DHCP host",
+				slog.Any("host", host),
+				slog.String("error", err.Error()),
+			)
 			return err
 		}
 		config = append(config, hostConfig)

@@ -1,7 +1,6 @@
 package fiberslog
 
 import (
-	"context"
 	"os"
 	"time"
 
@@ -58,7 +57,7 @@ func New(config ...Config) fiber.Handler {
 		}
 
 		// Log disabled for the current level, short-circuit return
-		if !cfg.Logger.Enabled(context.Background(), logLevel) {
+		if !cfg.Logger.Enabled(c.UserContext(), logLevel) {
 			return err
 		}
 
@@ -126,7 +125,7 @@ func New(config ...Config) fiber.Handler {
 
 		}
 
-		cfg.Logger.LogAttrs(context.Background(), logLevel, logMessage, fields...)
+		cfg.Logger.LogAttrs(c.UserContext(), logLevel, logMessage, fields...)
 
 		return err
 	}
