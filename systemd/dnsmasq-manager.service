@@ -92,9 +92,9 @@ NoNewPrivileges=true
 # Disable access / creating of memory mappings that are writable and executable at the same time
 MemoryDenyWriteExecute=true
 
-# Allow only syscalls in group @system-service the those in groups @privileged and @resources
+# Allow only syscalls in group @system-service except those in group @privileged
 SystemCallFilter=@system-service
-SystemCallFilter=~@privileged @resources
+SystemCallFilter=~@privileged
 
 # Allow native calls only
 SystemCallArchitectures=native
