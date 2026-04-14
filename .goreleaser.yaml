@@ -51,6 +51,8 @@ nfpms:
     homepage: https://github.com/gringolito/dnsmasq-manager
     description: Dnsmasq DNS / DHCP management external API.
     license: Beer-ware
+    dependencies:
+      - dnsmasq
     formats:
       - deb
       - rpm
