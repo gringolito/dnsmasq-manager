@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
-	"github.com/gringolito/dnsmasq-manager/api/middleware/fiberswagger"
+	"github.com/gringolito/fiberswagger"
 )
 
 type Router interface {
