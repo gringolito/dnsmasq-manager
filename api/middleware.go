@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/google/uuid"
-	"github.com/gringolito/dnsmasq-manager/api/middleware/fiberslog"
+	"github.com/gringolito/fiberslog"
 	"github.com/gringolito/dnsmasq-manager/config"
 	"golang.org/x/exp/slog"
 )
