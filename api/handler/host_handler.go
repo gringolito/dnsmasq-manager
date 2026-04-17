@@ -22,6 +22,7 @@ const (
 	InvalidRequestMessage       = "The request is invalid."
 	InvalidRequestBodyMessage   = "The request body was invalid."
 	InvalidMacAddressMessage    = "The MAC address is invalid."
+	InvalidIPAddressMessage     = "The IP address is invalid."
 	DuplicatedMacAddressMessage = "A host with the same MAC address already exists."
 	DuplicatedIPAddressMessage  = "The IP address is already in use."
 )
@@ -38,6 +39,8 @@ const (
 		"Please specify one of these parameters in order to proceed."
 	MalformedMacAddress = "The MAC address that was provided is not in the correct format. " +
 		"Please check the format of the MAC address and try again. The MAC address that was provided was: %s."
+	MalformedIPAddress = "The IP address that was provided is not in the correct format. " +
+		"Please check the format of the IP address and try again. The IP address that was provided was: %s."
 	IPAddressAlreadyInUse = "The IP address that was provided is already in use by another host. " +
 		"Please try again with a different IP address. The IP address that was provided was: %s."
 	MacAddressAlreadyInUse = "The MAC address that was provided is already in use by another host: %s."
@@ -120,7 +123,15 @@ func getStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string) e
 }
 
 func getStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) error {
-	host, err := service.FetchByIP(net.ParseIP(ipAddress))
+	ip := net.ParseIP(ipAddress)
+	if ip == nil {
+		slog.Debug("Could not parse IP address",
+			slog.String("ipAddress", ipAddress),
+		)
+		return presenter.BadRequestResponse(c, InvalidIPAddressMessage, fmt.Sprintf(MalformedIPAddress, ipAddress))
+	}
+
+	host, err := service.FetchByIP(ip)
 	if err != nil {
 		return presenter.InternalServerErrorResponse(c)
 	}
@@ -213,7 +224,15 @@ func removeStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string
 }
 
 func removeStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) error {
-	host, err := service.RemoveByIP(net.ParseIP(ipAddress))
+	ip := net.ParseIP(ipAddress)
+	if ip == nil {
+		slog.Debug("Could not parse IP address",
+			slog.String("ipAddress", ipAddress),
+		)
+		return presenter.BadRequestResponse(c, InvalidIPAddressMessage, fmt.Sprintf(MalformedIPAddress, ipAddress))
+	}
+
+	host, err := service.RemoveByIP(ip)
 	if err != nil {
 		return presenter.InternalServerErrorResponse(c)
 	}

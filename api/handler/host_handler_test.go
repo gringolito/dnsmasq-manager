@@ -163,6 +163,14 @@ func TestStaticHostsApi(t *testing.T) {
 			},
 		},
 		{
+			name:               "GetStaticHostByIPInvalidIPAddress",
+			httpMethod:         http.MethodGet,
+			route:              fmt.Sprintf("/api/v1/static/host?ip=%s", InvalidIPAddress),
+			expectedStatusCode: http.StatusBadRequest,
+			expectedResponse:   tests.ErrorJSON(http.StatusBadRequest, InvalidIPAddressMessage, fmt.Sprintf(MalformedIPAddress, InvalidIPAddress)),
+			mockSetup:          voidMock,
+		},
+		{
 			name:               "GetStaticHostByIPSuccess",
 			httpMethod:         http.MethodGet,
 			route:              fmt.Sprintf("/api/v1/static/host?ip=%s", ValidIPAddress),
@@ -429,6 +437,14 @@ func TestStaticHostsApi(t *testing.T) {
 			mockSetup: func(mock *hostmock.ServiceMock) {
 				mock.On("RemoveByMac", tests.ParseMAC(ValidMACAddress)).Once().Return(nil, errors.New("an error"))
 			},
+		},
+		{
+			name:               "DeleteStaticHostByIPInvalidIPAddress",
+			httpMethod:         http.MethodDelete,
+			route:              fmt.Sprintf("/api/v1/static/host?ip=%s", InvalidIPAddress),
+			expectedStatusCode: http.StatusBadRequest,
+			expectedResponse:   tests.ErrorJSON(http.StatusBadRequest, InvalidIPAddressMessage, fmt.Sprintf(MalformedIPAddress, InvalidIPAddress)),
+			mockSetup:          voidMock,
 		},
 		{
 			name:               "DeleteStaticHostByIPSuccess",
