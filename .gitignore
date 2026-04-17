@@ -38,3 +38,6 @@ dist/
 # JWT signing keys
 *.pem
 *.pub
+
+# Status tracking
+.tracking/
