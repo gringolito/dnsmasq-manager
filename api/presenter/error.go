@@ -25,7 +25,10 @@ func ErrorResponse(c *fiber.Ctx, httpStatus int, message string, details interfa
 }
 
 func InternalServerErrorResponse(c *fiber.Ctx) error {
-	requestId := c.Locals("requestid").(string)
+	requestId, ok := c.Locals("requestid").(string)
+	if !ok {
+		requestId = "unknown"
+	}
 	return ErrorResponse(c, http.StatusInternalServerError, ServerErrorMessage, fmt.Sprintf(InternalServerError, requestId))
 }
 
