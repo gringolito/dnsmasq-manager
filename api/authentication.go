@@ -24,6 +24,9 @@ const (
 
 func setupJwtConfig(cfg *config.Config) (*jwtware.Config, error) {
 	if cfg.Auth.Method == config.NoAuth {
+		slog.Warn("Authentication is disabled! All API endpoints are publicly accessible without authentication.",
+			slog.String("auth.method", cfg.Auth.Method),
+		)
 		return nil, nil
 	}
 
