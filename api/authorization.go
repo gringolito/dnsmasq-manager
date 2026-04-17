@@ -20,7 +20,10 @@ func authorizationHandler(jwtContextKey string, roles []string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token := c.Locals(jwtContextKey).(*jwt.Token)
 		claims := token.Claims.(jwt.MapClaims)
-		name := claims["name"].(string)
+		name, ok := claims["name"].(string)
+		if !ok {
+			return presenter.ForbiddenResponse(c, NotAuthorizedMessage, MalformedJwt)
+		}
 
 		scopes, err := parseClaimScope(claims)
 		if err != nil {
