@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slog"
 )
 
 // Auth.Method constants
@@ -86,7 +87,9 @@ func Init(configName string) (*Config, error) {
 	err := v.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Config file not found; ignore error, parse environments and load defaults
+			slog.Warn("No configuration file found, running with defaults",
+				slog.String("config.name", configName),
+			)
 		} else {
 			return nil, err
 		}
