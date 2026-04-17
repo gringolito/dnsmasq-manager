@@ -554,6 +554,37 @@ func TestStaticHostsApiWithAuth(t *testing.T) {
 			mockSetup:          voidMock,
 		},
 		{
+			name:       "GetAllMissingNameClaimJWT",
+			httpMethod: http.MethodGet,
+			route:      "/api/v1/static/hosts",
+			token: &jwtTokenConfig{
+				SigningKey: AuthKey,
+				Claims: jwt.MapClaims{
+					"exp":   time.Now().Add(time.Minute * 30).Unix(),
+					"scope": scope.DhcpRead,
+				},
+			},
+			expectedStatusCode: http.StatusForbidden,
+			expectedResponse:   tests.ErrorJSON(http.StatusForbidden, api.NotAuthorizedMessage, api.MalformedJwt),
+			mockSetup:          voidMock,
+		},
+		{
+			name:       "GetAllNonStringNameClaimJWT",
+			httpMethod: http.MethodGet,
+			route:      "/api/v1/static/hosts",
+			token: &jwtTokenConfig{
+				SigningKey: AuthKey,
+				Claims: jwt.MapClaims{
+					"name":  42,
+					"exp":   time.Now().Add(time.Minute * 30).Unix(),
+					"scope": scope.DhcpRead,
+				},
+			},
+			expectedStatusCode: http.StatusForbidden,
+			expectedResponse:   tests.ErrorJSON(http.StatusForbidden, api.NotAuthorizedMessage, api.MalformedJwt),
+			mockSetup:          voidMock,
+		},
+		{
 			name:       "GetAllAuthorized",
 			httpMethod: http.MethodGet,
 			route:      "/api/v1/static/hosts",
