@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/gringolito/dnsmasq-manager/pkg/model"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 type Repository interface {

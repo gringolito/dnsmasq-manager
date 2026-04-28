@@ -13,7 +13,7 @@ import (
 	"github.com/gringolito/dnsmasq-manager/api/validation"
 	"github.com/gringolito/dnsmasq-manager/pkg/host"
 	"github.com/gringolito/dnsmasq-manager/pkg/model"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 // Error messages

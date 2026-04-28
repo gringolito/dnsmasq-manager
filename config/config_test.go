@@ -8,7 +8,7 @@ import (
 	"github.com/gringolito/dnsmasq-manager/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 const testConfigName = "dmm-test-config"

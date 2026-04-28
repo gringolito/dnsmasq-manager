@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 // Auth.Method constants

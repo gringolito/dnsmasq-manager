@@ -12,7 +12,7 @@ import (
 	"github.com/gringolito/dnsmasq-manager/api/handler"
 	"github.com/gringolito/dnsmasq-manager/config"
 	"github.com/gringolito/dnsmasq-manager/pkg/host"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 const (

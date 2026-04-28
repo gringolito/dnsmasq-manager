@@ -6,8 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gringolito/dnsmasq-manager/api/presenter"
-	"golang.org/x/exp/slices"
-	"golang.org/x/exp/slog"
+	"log/slog"
+	"slices"
 )
 
 const (
@@ -36,7 +36,7 @@ func authorizationHandler(jwtContextKey string, roles []string) fiber.Handler {
 
 		authorized := false
 		for _, role := range roles {
-			if slices.Contains[string](scopes, role) {
+			if slices.Contains(scopes, role) {
 				authorized = true
 				slog.Debug("Authorization granted",
 					slog.String("user", name),
