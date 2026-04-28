@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gringolito/dnsmasq-manager/api/presenter"
 	"github.com/gringolito/dnsmasq-manager/config"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 const (

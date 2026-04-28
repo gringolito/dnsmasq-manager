@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gringolito/fiberslog"
 	"github.com/gringolito/dnsmasq-manager/config"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 type Middleware interface {

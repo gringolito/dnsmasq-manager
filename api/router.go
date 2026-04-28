@@ -42,7 +42,7 @@ func (r *router) AddMetricsRoute(cfg monitor.Config) {
 }
 
 func (r *router) AddSwaggerUIRoute(openApiSpecFile string) {
-	fiberswagger.Router(r.root, fiberswagger.Config{
+	fiberswagger.MustRouter(r.root, fiberswagger.Config{
 		BasePath: "/openapi",
 		FilePath: openApiSpecFile,
 	})
